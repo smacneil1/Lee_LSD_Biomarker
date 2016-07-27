@@ -1,0 +1,74 @@
+---
+title: "Combine_Single_RNAseq_Files"
+author: "Shelley MacNeil"
+date: "July 25, 2016"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Load packages
+```{r}
+library(data.table)
+```
+
+# List the file paths
+```{r}
+data="/Users/shelleymacneil/Documents/PhDProjects/U54_Computational/data/single_samples_tpmlog/tpmlog"
+sampleList="~/Documents/PhDProjects/U54_Computational/protocol/13552R1_2016-07-24_sample_sheet.txt"
+```
+
+# Read in the files 
+```{r}
+
+setwd(data)
+filenames=system("ls", intern=TRUE)
+length(files)
+
+# read in one file at at time, and cbind all columns
+filenames=system("ls", intern=TRUE)
+filenames
+for(i in 1:length(filenames))
+  {
+   f= as.matrix(read.table(files[i], stringsAsFactors = FALSE, header=FALSE,sep='\t', quote="", row.names = 1))
+   colnames(f) =c(gsub("_combined.fastq.gz_resubread.txt.gz.tpmlog","",filenames[i]))
+   if(i!=1){
+     data<-cbind(data,f)
+   }
+   else {
+     data<-f
+     }
+}
+
+```
+
+# Rename the columns of the data
+```{r}
+# read in the sample identifiers from the file provided by sequencing core
+samples=read.delim("~/Documents/PhDProjects/U54_Computational/protocol/13552R1_2016-07-24_sample_sheet.txt", quote="")
+samples=samples[,2:3]
+# use gsub to get the column names the way you want them. 
+samples=as.data.frame(apply(samples,2,function(x)gsub('RNA', '',x)))
+samples= as.data.frame(apply(samples,2,function(x)gsub(' Treated ', '_',x)))
+samples= as.data.frame(apply(samples,2,function(x)gsub(' ctrl ', '_ctrl_',x)))
+rownames(samples)
+
+#transpose the RNA-seq data. 
+data_t=t(data)
+
+#merge with the sample names
+data_m=merge(samples, data_t, by.x=1, by.y=0)
+rownames(data_m)=data_m[,2]
+data_m=data_m[,-c(1,2)]
+data=t(data_m)
+#View(data)
+
+```
+
+#Write the file
+```{r}
+#write.table(data, "~/Documents/PhDProjects/U54_Computational/data/RNA_seq_LEE_LSD_tmplog.txt", col.names=NA,sep='\t',quote=F)
+```
+

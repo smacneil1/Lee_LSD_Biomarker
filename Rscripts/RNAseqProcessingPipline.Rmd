@@ -1,0 +1,122 @@
+---
+title: "RNA-seq Processing Pipeline"
+author: "Shelley MacNeil"
+date: "July 19, 2016"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#RNA-seq Data Processing Pipeline
+
+
+1) Download the files from https://hci-bio-app.hci.utah.edu/gnomex/ using the FDT Upload Command Line
+
+Downloaded the FDT.jar from the website, scp'ed it to tikvah, and downloaded the files by running the following command:
+
+java -jar ./fdt.jar -pull -r -c hci-bio-app.hci.utah.edu -d ./ /scratch/fdtswap/fdt_sandbox_gnomex/cf316430-5045-40a6-9202-82ba30f401a7/13552R
+
+* We have 208 files: 104 are the 26 samples x 4 lanes x 2 with the .md5 files
+
+2) Check to make sure the number icd number of the .md5 file matches the number with the checksum function
+
+# checks the sum of all the files 
+md5sum *.txt.gz  
+
+# make sure they match the .md5 file 
+cat *.md5 
+
+They all matched! :)
+
+          
+3) Put all your fastq files in the same directory as your scripts 
+Example: /data4/SingleCellSeqTumorHet/Patient2_0908097a_RNA_New
+
+          qc 
+          trim_single_cell_rnaseq 
+          trim  (called bytrim_single_cell_rnaseq )
+          rsubread 
+          AlignRnaSeq.R (called by rsubread )
+          
+2) Call the *qc* script using nohup: Returns an HTML quality control report and text report
+
+6:39
+
+3) If trimming is neccessary, call the *trim_single_cell_rnaseq* which calls the *trim* script: Returns a FASTQ
+
+4) Cominbe the 4 lanes
+
+The way I like to combine fastq files is:
+"zcat <fastq files> | gzip -c - > combined.fastq.gz"
+
+I ran the script compress_lanes.sh that put them all together. 
+
+
+Assigned	25354135
+Unassigned_Ambiguity	470274
+Unassigned_MultiMapping	0
+Unassigned_NoFeatures	6013577
+Unassigned_Unmapped	5086333
+Unassigned_MappingQuality	0
+Unassigned_FragementLength	0
+Unassigned_Chimera	0
+Unassigned_Secondary	0
+Unassigned_Nonjunction	0
+Unassigned_Duplicate	0
+
+Assigned+Unassigned_Ambiguity(assigned to 2 places)+Unassigned_NoFeatures (DNA, intron) / Total from this 
+
+
+
+4) Call the *rsubread* script with called *AlignRnaSeq.R* to align the the reads to the genome and normalizes the data: Returns a TMPlog file. 
+
+There was the alignment scores in the rsubread file, some were low 
+
+David says: 
+i would check the fastqc report for any additional red flags, check the RIN to see if that sample was much worse than the others, basically look for anything that could explain why it is much worse than the others
+
+5) checks all the QC stuff
+
+# to get total sequnces from the qc report
+
+find . -name "*fastqc_data.txt" -exec cat {} \; | grep "Total Sequences"
+# to go the Assigned reads Rsubread. 
+cat *stats | grep "Assigned"
+
+Next time make a script to do this. Make a file that makes into columns with QC reads, assigned reads, and adds the totally of all the reads and calucate the % mapped reads
+
+Compared the combined # of totals reads from fastq and a few of total reads from the stats file and they matched.
+
+Do not match with nohup but that thing is put of order
+
+Right now, I really dont know about the mapped reads %. 
+
+
+
+Problems:
+Seems to have alot of duplicaed sequences
+Lots of Kmers 
+adapters tend to be gc ricch 
+
+All of the quality control reports were the same for the 4 vs the combied. 
+
+Don't worry about kmers if your per base quality is good. 
+
+the duplicated sequencing could be due to simply a result of saturating the diversity of the library
+
+6) combine the R-seq files together. 
+
+Rename them. 
+
+
+Unassigned_NoFeatures- still aligned 
+
+### Done
+
+
+HiSeq 50 Cycle Single-Read Sequencing version 4
+Sequencing libraries (25 pM) were chemically denatured and applied to an Illumina HiSeq v4 single read flow cell using an Illumina cBot.  Hybridized molecules were clonally amplified and annealed to sequencing primers with reagents from an Illumina HiSeq SR Cluster Kit v4-cBot (GD-401-4001).  Following transfer of the flowcell to an Illumina HiSeq 2500 instrument (HCSv2.2.38 and RTA v1.18.61), a 50 cycle single-read sequence run was performed using HiSeq SBS Kit v4 sequencing reagents (FC-401-4002).
+
+
