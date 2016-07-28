@@ -16,23 +16,23 @@ library(data.table)
 
 # List the file paths
 ```{r}
-data="/Users/shelleymacneil/Documents/PhDProjects/U54_Computational/data/single_samples_tpmlog/tpmlog"
+dataPath="/Users/shelleymacneil/Documents/PhDProjects/Lee_LSD_Biomarker/data/single_samples_tpmlog/tpmlog/"
 sampleList="~/Documents/PhDProjects/U54_Computational/protocol/13552R1_2016-07-24_sample_sheet.txt"
 ```
 
 # Read in the files 
 ```{r}
 
-setwd(data)
+setwd(dataPath)
 filenames=system("ls", intern=TRUE)
-length(files)
+filenames
 
 # read in one file at at time, and cbind all columns
 filenames=system("ls", intern=TRUE)
 filenames
 for(i in 1:length(filenames))
   {
-   f= as.matrix(read.table(files[i], stringsAsFactors = FALSE, header=FALSE,sep='\t', quote="", row.names = 1))
+   f= as.matrix(read.table(filenames[i], stringsAsFactors = FALSE, header=FALSE,sep='\t', quote="", row.names = 1))
    colnames(f) =c(gsub("_combined.fastq.gz_resubread.txt.gz.tpmlog","",filenames[i]))
    if(i!=1){
      data<-cbind(data,f)
@@ -47,7 +47,7 @@ for(i in 1:length(filenames))
 # Rename the columns of the data
 ```{r}
 # read in the sample identifiers from the file provided by sequencing core
-samples=read.delim("~/Documents/PhDProjects/U54_Computational/protocol/13552R1_2016-07-24_sample_sheet.txt", quote="")
+samples=read.delim("~/Documents/PhDProjects/Lee_LSD_Biomarker/data/13552R1_2016-07-24_sample_sheet.txt", quote="")
 samples=samples[,2:3]
 # use gsub to get the column names the way you want them. 
 samples=as.data.frame(apply(samples,2,function(x)gsub('RNA', '',x)))
@@ -63,12 +63,58 @@ data_m=merge(samples, data_t, by.x=1, by.y=0)
 rownames(data_m)=data_m[,2]
 data_m=data_m[,-c(1,2)]
 data=t(data_m)
-#View(data)
+View(data)
 
 ```
 
-#Write the file
+#Write the RNA-seq File
 ```{r}
 #write.table(data, "~/Documents/PhDProjects/U54_Computational/data/RNA_seq_LEE_LSD_tmplog.txt", col.names=NA,sep='\t',quote=F)
+```
+
+#Seperate the files for Binreg
+```{r}
+install.packages("dplyr")
+library(dplyr)
+colnames(data)
+
+#filter the data
+dim(data)
+data_f <-data[apply(data[,1:26]==0,1,mean) < 0.85,]
+dim(data_f)
+
+# subset the Lee and Lee Controls. 
+Lee_all=data_f[,grepl("Lee011", colnames(data))]
+dim(Lee_all)
+
+# subset the Lee treated
+Lee_treated=Lee_all[,grepl("_Lee011", colnames(Lee_all))]
+Lee_treated=Lee_treated[, -c(1,8)]
+dim(Lee_treated)
+colnames(Lee_treated)
+write.table(Lee_treated, "~/Documents/PhDProjects/Lee_LSD_Biomarker/data/RNAseq_LeeTreated.txt", col.names=NA,sep='\t',quote=F)
+
+#Subset the Lee controls
+Lee_Control=Lee_all[,grepl("_ctrl_", colnames(Lee_all))]
+colnames(Lee_Control)
+dim(Lee_Control)
+write.table(Lee_Control, "~/Documents/PhDProjects/Lee_LSD_Biomarker/data/RNAseq_LeeControl.txt", col.names=NA,sep='\t',quote=F)
+  
+LSD_all=data_f[,grepl("LSD1", colnames(data))]
+colnames(LSD_all)
+dim(LSD_all)
+
+# Subset LSD treated
+LSD_treated=LSD_all[, - c(1,3,5,7,9,11,13,15)]
+head(LSD_treated)
+dim(LSD_treated)
+write.table(LSD_treated, "~/Documents/PhDProjects/Lee_LSD_Biomarker/data/RNAseq_LSD_Treated.txt", col.names=NA,sep='\t',quote=F)
+
+# Subset LSD Control
+LSD_Control=LSD_all[,grepl("_ctrl_", colnames(LSD_all))]
+colnames(LSD_Control)
+dim(LSD_Control)
+write.table(LSD_Control, "~/Documents/PhDProjects/Lee_LSD_Biomarker/data/RNAseq_LSD_Control.txt", col.names=NA,sep='\t',quote=F)
+
 ```
 
