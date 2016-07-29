@@ -1,0 +1,24 @@
+#!/bin/bash
+
+# ---
+# title: "ssGSEA"
+# author: "Shelley MacNeil"
+# date: "July 28, 2016"
+# purpose: calls the ssGSEA Rscript
+# ---- 
+
+dataDir=/data4/shelley_d4/U54_Lee_LSD_Biomarker/results/ssGSEA
+
+#RNA seq data
+inFile=/data2/Moom_datasets/PANCAN24/PANCAN24_BRCA_1119_TPMlog2.txt
+
+#specific the out file names
+outfile_ssGSVA_C2=${dataDir}/ssGSEA_enrichment_TCGA_BRCA_C2.txt
+cat $outfile_ssGSVA_C2
+outfile_geneSets_C2=${dataDir}/ssGSEA_geneSets_TCGA_BRCA_C2.txt
+outfile_ssGSVA_C6= ${dataDir}/ssGSEA_enrichment_TCGA_BRCA_C6.txt
+outfile_geneSets_C6=${dataDir}/ssGSEA_geneSets_TCGA_BRCA_C6.txt
+
+# call the ssGSEA script
+#Rscript --vanilla code/ssGSEA_TCGA_BRCA.R $inFile $outfile_ssGSVA_C2 $outfile_geneSets_C2 $outfile_ssGSVA_C6 $outfile_geneSets_C6
+echo "Done with ssGSEA 

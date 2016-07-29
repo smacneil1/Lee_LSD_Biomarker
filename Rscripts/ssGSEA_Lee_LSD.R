@@ -40,27 +40,27 @@ fit <- lmFit(gsva, design)
 View(fit)
 fit  <- eBayes(fit)
 geneSets <- topTable(fit, coef="CtrlvsTreated", number=Inf, adjust.method = "BH", sort.by = "p" )
-return(geneSets)
+
 #write the file 
 write.table(geneSets, outFile_geneSets, col.names=NA, quote=FALSE, sep="\t")
+return(geneSets)
 
 }
 
-
 #specify paths and file names
-C2gmtFile <- "~/Documents/PhDProjects/Data/GMT_Files/c2.cp.v4.0.symbols.gmt"
-#C6gmtFile <- "~/Documents/PhDProjects/Data/GMT_Files/"
+C2gmtFile <- "~/Documents/PhDProjects/GMT_Files/c2.cp.v4.0.symbols.gmt"
+C6gmtFile <- "~/Documents/PhDProjects/GMT_Files/c6.all.v5.1.symbols.gmt"
 
 #output files 
-outfile_ssGSVA_Lee = "~/Documents/PhDProjects/Lee_LSD_Biomarker/results/ssGSEA/ssGSEA_enrichment_Lee.txt"
-outfile_ssGSVA_Lee 
-outfile_geneSets_Lee="~/Documents/PhDProjects/Lee_LSD_Biomarker/results/ssGSEA/ssGSEA_geneSets_Lee.txt"
-outfile_geneSets_Lee
-outfileFile_ssGSVA_LSD <- "~/Documents/PhDProjects/Lee_LSD_Biomarker/results/ssGSEA/ssGSEA_enrichment_LSD.txt"
-outfileFile_ssGSVA_LSD
-outfileFile_geneSets_LSD <- "~/Documents/PhDProjects/Lee_LSD_Biomarker/results/ssGSEA/ssGSEA_geneSets_LSD.txt"
-outfileFile_geneSets_LSD
+outfile_ssGSVA_Lee_C2= "~/Documents/PhDProjects/Lee_LSD_Biomarker/results/ssGSEA/ssGSEA_enrichment_Lee_C2.txt"
+outfile_geneSets_Lee_C2="~/Documents/PhDProjects/Lee_LSD_Biomarker/results/ssGSEA/ssGSEA_geneSets_Lee_C2.txt"
+outfile_ssGSVA_Lee_C6= "~/Documents/PhDProjects/Lee_LSD_Biomarker/results/ssGSEA/ssGSEA_enrichment_Lee_C6.txt"
+outfile_geneSets_Lee_C6="~/Documents/PhDProjects/Lee_LSD_Biomarker/results/ssGSEA/ssGSEA_geneSets_Lee_C6.txt"
 
+outfile_ssGSVA_LSD_C6 <- "~/Documents/PhDProjects/Lee_LSD_Biomarker/results/ssGSEA/ssGSEA_enrichment_LSD_C6.txt"
+outfile_geneSets_LSD_C6 <- "~/Documents/PhDProjects/Lee_LSD_Biomarker/results/ssGSEA/ssGSEA_geneSets_LSD_C6.txt"
+outfile_ssGSVA_LSD_C2 <- "~/Documents/PhDProjects/Lee_LSD_Biomarker/results/ssGSEA/ssGSEA_enrichment_LSD_C2.txt"
+outfile_geneSets_LSD_C2 <- "~/Documents/PhDProjects/Lee_LSD_Biomarker/results/ssGSEA/ssGSEA_geneSets_LSD_C2.txt"
 
 #load in the R data from Combine_Single_RNAseq_Files.Rmd 
 Lee_LSD_Data = load("data/Lee_LSD_RNAseqData.RData")
@@ -82,11 +82,16 @@ class_LSD
 # inputData, classFile, gmtFile, outFile_enrichment, outFile_geneSets
 
 #Lee
-Lee_ssGSEA_C2= ssGSEA(Lee_Ctrl_Both, class_Lee, C2gmtFile, outfile_ssGSVA_Lee, outfile_geneSets_Lee)
 
-View(Lee_ssGSEA_C2)
+Lee_ssGSEA_C2= ssGSEA(Lee_Ctrl_Both, class_Lee, C2gmtFile, outfile_ssGSVA_Lee_C2, outfile_geneSets_Lee_C2)
+Lee_ssGSEA_C6= ssGSEA(Lee_Ctrl_Both, class_Lee, C6gmtFile, outfile_ssGSVA_Lee_C6, outfile_geneSets_Lee_C6)
 
-LSD_ssGSEA_C2 = ssGSEA(LSD_Ctrl_Both, class_LSD,C2gmtFile,outputFile_ssGSVA_LSD, outputFile_geneSets_LSD  )
+# LSD
+LSD_ssGSEA_C2 = ssGSEA(LSD_Ctrl_Both, class_LSD,C2gmtFile,outfile_ssGSVA_LSD_C2, outfile_geneSets_LSD_C2)
+LSD_ssGSEA_C6 = ssGSEA(LSD_Ctrl_Both, class_LSD,C6gmtFile,outfile_ssGSVA_LSD_C6, outfile_geneSets_LSD_C6)
+
+
+
 
 
 

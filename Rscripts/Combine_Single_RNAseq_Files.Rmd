@@ -16,6 +16,7 @@ library(data.table)
 
 # List the file paths
 ```{r}
+source("~/Documents/PhDProjects/GFRN_signatures/Key_ASSIGN_functions_balancedsig.R")
 dataPath="/Users/shelleymacneil/Documents/PhDProjects/Lee_LSD_Biomarker/data/single_samples_tpmlog/tpmlog/"
 sampleList="~/Documents/PhDProjects/U54_Computational/protocol/13552R1_2016-07-24_sample_sheet.txt"
 ```
@@ -74,9 +75,7 @@ View(data)
 
 #Seperate the files for Binreg
 ```{r}
-install.packages("dplyr")
-library(dplyr)
-colnames(data)
+
 
 #filter the data
 dim(data)
@@ -92,14 +91,18 @@ Lee_treated=Lee_all[,grepl("_Lee011", colnames(Lee_all))]
 Lee_treated=Lee_treated[, -c(1,8)]
 dim(Lee_treated)
 colnames(Lee_treated)
-write.table(Lee_treated, "~/Documents/PhDProjects/Lee_LSD_Biomarker/data/RNAseq_LeeTreated.txt", col.names=NA,sep='\t',quote=F)
+#write.table(Lee_treated, "~/Documents/PhDProjects/Lee_LSD_Biomarker/data/RNAseq_LeeTreated.txt", col.names=NA,sep='\t',quote=F)
 
 #Subset the Lee controls
 Lee_Control=Lee_all[,grepl("_ctrl_", colnames(Lee_all))]
-colnames(Lee_Control)
+rownames(Lee_Control)
 dim(Lee_Control)
-write.table(Lee_Control, "~/Documents/PhDProjects/Lee_LSD_Biomarker/data/RNAseq_LeeControl.txt", col.names=NA,sep='\t',quote=F)
-  
+#write.table(Lee_Control, "~/Documents/PhDProjects/Lee_LSD_Biomarker/data/RNAseq_LeeControl.txt", col.names=NA,sep='\t',quote=F)
+
+#Lee Both Ordered
+Lee_Ctrl_Both=merge_drop(Lee_Control,Lee_treated, by=0)
+
+
 LSD_all=data_f[,grepl("LSD1", colnames(data))]
 colnames(LSD_all)
 dim(LSD_all)
@@ -108,13 +111,19 @@ dim(LSD_all)
 LSD_treated=LSD_all[, - c(1,3,5,7,9,11,13,15)]
 head(LSD_treated)
 dim(LSD_treated)
-write.table(LSD_treated, "~/Documents/PhDProjects/Lee_LSD_Biomarker/data/RNAseq_LSD_Treated.txt", col.names=NA,sep='\t',quote=F)
+#write.table(LSD_treated, "~/Documents/PhDProjects/Lee_LSD_Biomarker/data/RNAseq_LSD_Treated.txt", col.names=NA,sep='\t',quote=F)
 
 # Subset LSD Control
 LSD_Control=LSD_all[,grepl("_ctrl_", colnames(LSD_all))]
 colnames(LSD_Control)
 dim(LSD_Control)
-write.table(LSD_Control, "~/Documents/PhDProjects/Lee_LSD_Biomarker/data/RNAseq_LSD_Control.txt", col.names=NA,sep='\t',quote=F)
+#write.table(LSD_Control, "~/Documents/PhDProjects/Lee_LSD_Biomarker/data/RNAseq_LSD_Control.txt", col.names=NA,sep='\t',quote=F)
 
+LSD_Ctrl_Both=merge_drop(LSD_Control, LSD_treated, by=0)
+
+```
+Save the RData
+```{r}
+save.image(file="~/Documents/PhDProjects/Lee_LSD_Biomarker/data/Lee_LSD_RNAseqData.RData")
 ```
 
