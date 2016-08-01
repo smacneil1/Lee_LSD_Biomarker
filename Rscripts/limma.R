@@ -27,6 +27,7 @@ class_LSD
 limma_lee_outfile="~/Documents/PhDProjects/Lee_LSD_Biomarker/results/limma/limma_Lee.txt"
 limma_lsd_outfile="~/Documents/PhDProjects/Lee_LSD_Biomarker/results/limma/limma_LSD.txt"
 
+
 # Make limma function
 limma <- function (inputData, classFile, outFile){
   
@@ -45,23 +46,35 @@ write.table(DEresults, outFile, col.names=NA, quote=FALSE, sep="\t")
 
 DEgenes_01 <- DEresults[ which(DEresults$adj.P.Val < 0.01),]
 DEgenes_05 <- DEresults[ which(DEresults$adj.P.Val < 0.05),]
+DEgenes_50 <- topTable(fit, coef="CtrlvsTreated", number=50, adjust.method = "BH", sort.by = "p" )
+
+
 print("Number of genes with FDR < 0.01")
 print(dim(DEgenes_01))
 print("Number of genes with FDR < 0.05")
 print(dim(DEgenes_05))
 
 print("Complete")
-return(DEresults)
+return(DEgenes_50)
 }
 
+
+View(Lee_Ctrl_Both)
+
 dim(Lee_Ctrl_Both)
-limma_lee = limma(Lee_Ctrl_Both, class_Lee, limma_lee_outfile)
-View(limma_lee)
+limma_lee_05 = limma(Lee_Ctrl_Both, class_Lee, limma_lee_outfile)
+View(limma_lee_05)
+
+limma_lee_01 = limma(Lee_Ctrl_Both, class_Lee, limma_lee_outfile)
+View(limma_lee_01)
+
 # "Number of genes with FDR < 0.01"  --- 154   6
 # "Number of genes with FDR < 0.05"  --- 439   6
 
-limma_lsd = limma(LSD_Ctrl_Both, class_LSD, limma_lee_outfile)
+limma_lsd_05 = limma(LSD_Ctrl_Both, class_LSD, limma_lee_outfile)
 View(limma_lsd)
+limma_lsd_50 = limma(LSD_Ctrl_Both, class_LSD, limma_lee_outfile)
+
 #"Number of genes with FDR < 0.01"   ----  3  6
 # "Number of genes with FDR < 0.05"  ---- 14  6
 
